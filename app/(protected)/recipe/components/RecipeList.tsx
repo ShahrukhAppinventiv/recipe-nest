@@ -19,11 +19,11 @@ export function RecipeList({
 
   return (
     <section aria-label="Recipe list" className="min-w-0">
-      <p className="mb-4 text-sm text-muted-foreground">
+      {/* <p className="mb-4 text-sm text-muted-foreground">
         {total === 0
           ? "No recipes found"
           : `Showing ${start}-${end} of ${total} ${total === 1 ? "recipe" : "recipes"}`}
-      </p>
+      </p> */}
 
       {recipes.length === 0 ? (
         <div className="rounded-2xl border border-border/60 bg-card px-6 py-16 text-center shadow-soft">

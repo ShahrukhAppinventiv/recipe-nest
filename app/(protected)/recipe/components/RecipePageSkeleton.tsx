@@ -1,6 +1,27 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { RECIPE_PAGE_SIZE } from "../lib/recipe.params";
 
+export function RecipeListSkeleton() {
+  return (
+    <div className="flex flex-col gap-4" aria-busy aria-label="Loading recipes">
+      <Skeleton className="h-5 w-40" />
+
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        {Array.from({ length: RECIPE_PAGE_SIZE }).map((_, index) => (
+          <RecipeRichCardSkeleton key={index} />
+        ))}
+      </div>
+
+      <div className="flex items-center justify-center gap-2 pt-2">
+        <Skeleton className="h-9 w-24 rounded-md" />
+        <Skeleton className="h-9 w-9 rounded-md" />
+        <Skeleton className="h-9 w-9 rounded-md" />
+        <Skeleton className="h-9 w-20 rounded-md" />
+      </div>
+    </div>
+  );
+}
+
 function RecipeRichCardSkeleton() {
   return (
     <div

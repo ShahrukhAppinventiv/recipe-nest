@@ -15,7 +15,6 @@ export function SignInForm() {
     validateOnMount,
     handleSubmit,
     handleSocialClick,
-    authError,
   } = useSignInFormHelper();
 
   return (
@@ -26,12 +25,6 @@ export function SignInForm() {
           Sign in to discover curated recipes
         </p>
       </div>
-
-      {authError && (
-        <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
-          {authError}
-        </p>
-      )}
 
       <Formik
         initialValues={initialValues}

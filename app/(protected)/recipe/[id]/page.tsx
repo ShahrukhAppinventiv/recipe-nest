@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { RecipeDetailContent } from "../components/RecipeDetailContent";
-import { getRecipeById } from "@/lib/recipe/recipe.service";
+import { getRecipeById } from "../lib/recipe.service";
 
 type RecipeDetailPageProps = {
   params: Promise<{ id: string }>;

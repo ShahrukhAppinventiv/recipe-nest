@@ -7,7 +7,7 @@ import type {
   DbRecipeDetailWithRelations,
   DbRecipeWithRelations,
   RecipeDetailData,
-} from "@/lib/recipe/recipe.types";
+} from "./recipe.types";
 
 function toRecipeDifficulty(
   value: string | null,

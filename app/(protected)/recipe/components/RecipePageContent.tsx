@@ -1,9 +1,8 @@
 "use client";
 
-import type { RecipeCardData } from "@/components/recipeCard/types";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import type { FilterOption } from "@/lib/recipe/recipe.types";
+import type { FilterOption } from "../lib/recipe.types";
 import {
   EMPTY_RECIPE_FILTERS,
   type FilterGroup,
@@ -16,37 +15,30 @@ import {
 } from "../lib/recipe.params";
 import { RecipeFilters } from "./RecipeFilters";
 import { RecipeHero } from "./RecipeHero";
-import { RecipeList } from "./RecipeList";
 import { RecipeMobileFilters } from "./RecipeMobileFilters";
-import { RecipePagination } from "./RecipePagination";
 import { RecipeSearch } from "./RecipeSearch";
 
 type RecipePageContentProps = {
   initialFilters: RecipeFiltersState;
   cuisines: FilterOption[];
   mealTypes: FilterOption[];
-  recipes: RecipeCardData[];
-  total: number;
-  page: number;
-  pageSize: number;
-  sort: RecipeSort;
+  children: React.ReactNode;
 };
 
 export function RecipePageContent({
   initialFilters,
   cuisines,
   mealTypes,
-  recipes,
-  total,
-  page,
-  pageSize,
-  sort,
+  children,
 }: RecipePageContentProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [filters, setFilters] = useState(initialFilters);
   const filtersRef = useRef(filters);
+
+  const sort: RecipeSort =
+    searchParams.get("sort") === "rating" ? "rating" : "latest";
   const sortRef = useRef(sort);
 
   filtersRef.current = filters;
@@ -59,7 +51,6 @@ export function RecipePageContent({
     setFilters(parsed);
   }, [searchParams]);
 
-
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
       syncUrl(filtersRef.current);
@@ -67,7 +58,6 @@ export function RecipePageContent({
 
     return () => window.clearTimeout(timeoutId);
   }, [filters.search, pathname, router]);
-
 
   function syncUrl(next: RecipeFiltersState, nextPage = 1) {
     const query = recipeFiltersToQueryString(
@@ -110,8 +100,6 @@ export function RecipePageContent({
     setFilters((current) => ({ ...current, search }));
   }
 
-
-
   const filterProps = {
     cuisines,
     mealTypes,
@@ -131,19 +119,7 @@ export function RecipePageContent({
         <div className="flex min-w-0 flex-col gap-4">
           <RecipeSearch value={filters.search} onChange={setSearch} />
           <RecipeMobileFilters {...filterProps} />
-          <RecipeList
-            recipes={recipes}
-            total={total}
-            page={page}
-            pageSize={pageSize}
-          />
-          <RecipePagination
-            page={page}
-            pageSize={pageSize}
-            total={total}
-            filters={filters}
-            sort={sort}
-          />
+          {children}
         </div>
       </div>
     </div>

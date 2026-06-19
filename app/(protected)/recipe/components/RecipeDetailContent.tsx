@@ -12,7 +12,7 @@ import {
   User,
   Users,
 } from "lucide-react";
-import type { RecipeDetailData } from "@/lib/recipe/recipe.types";
+import type { RecipeDetailData } from "../lib/recipe.types";
 
 type RecipeDetailContentProps = {
   recipe: RecipeDetailData;

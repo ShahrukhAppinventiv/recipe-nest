@@ -42,7 +42,7 @@ export async function signInWithCredentials(
   if (result?.error) {
     return {
       success: false,
-      message: "Invalid email or password",
+      message: result.error,
       error: result.error,
     };
   }

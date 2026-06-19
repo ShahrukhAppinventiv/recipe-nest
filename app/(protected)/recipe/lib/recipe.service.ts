@@ -1,22 +1,20 @@
 import type { RecipeCardData, RecipeSpotlightData } from "@/components/recipeCard/types";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { unstable_cache } from "next/cache";
+import { cache } from "react";
 import {
   toRecipeCardData,
   toRecipeDetailData,
   toRecipeSpotlightData,
-} from "@/lib/recipe/recipe.mapper";
-import type {
-  RecipeSearchParams,
-  RecipesResult,
-} from "@/lib/recipe/recipe.params";
+} from "./recipe.mapper";
 import type {
   DbRecipeDetailWithRelations,
   DbRecipeWithRelations,
   FilterOption,
   RecipeDetailData,
-} from "@/lib/recipe/recipe.types";
-import { createAdminClient } from "@/lib/supabase/admin";
-import { unstable_cache } from "next/cache";
-import { cache } from "react";
+  RecipeSearchParams,
+  RecipesResult,
+} from "./recipe.types";
 
 const FILTER_OPTIONS_REVALIDATE_SECONDS = 3600;
 
@@ -289,5 +287,3 @@ export async function getRecipeOfTheDay(): Promise<RecipeSpotlightData | null> {
 
   return toRecipeSpotlightData(data as unknown as DbRecipeWithRelations);
 }
-
-

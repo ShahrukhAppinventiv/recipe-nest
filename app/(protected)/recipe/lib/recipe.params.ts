@@ -1,12 +1,9 @@
-import type {
-  RecipeSearchParams,
-  RecipeSort,
-} from "@/lib/recipe/recipe.params";
 import type { RecipeFiltersState } from "./filter-options";
+import type { RecipeSearchParams, RecipeSort } from "./recipe.types";
 
 export type { RecipeSort };
 
-export const RECIPE_PAGE_SIZE = 9;
+export const RECIPE_PAGE_SIZE = 50;
 
 type RawSearchParams = Record<string, string | string[] | undefined>;
 

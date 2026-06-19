@@ -1,3 +1,5 @@
+import type { RecipeCardData } from "@/components/recipeCard/types";
+
 export type DbRecipe = {
   id: number;
   created_at: string;
@@ -55,4 +57,23 @@ export type RecipeDetailData = {
   instructions: string[];
   authorName?: string;
   createdAt: string;
+};
+
+export type RecipeSort = "latest" | "rating";
+
+export type RecipeSearchParams = {
+  search?: string;
+  cuisineIds: number[];
+  mealTypeIds: number[];
+  difficulties: string[];
+  sort: RecipeSort;
+  page: number;
+  pageSize: number;
+};
+
+export type RecipesResult = {
+  recipes: RecipeCardData[];
+  total: number;
+  page: number;
+  pageSize: number;
 };

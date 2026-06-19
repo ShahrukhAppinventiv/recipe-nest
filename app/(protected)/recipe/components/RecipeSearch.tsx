@@ -1,6 +1,6 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 
 type RecipeSearchProps = {
   value: string;
@@ -20,13 +20,23 @@ export function RecipeSearch({ value, onChange }: RecipeSearchProps) {
         />
         <input
           id="recipe-search"
-          type="search"
+          type="text"
           value={value}
           autoComplete="off"
           placeholder="Search recipes by Name..."
           onChange={(event) => onChange(event.target.value)}
           className="h-10 w-full rounded-lg border border-border bg-background py-2 pr-4 pl-9 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
         />
+        {value && (
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            className="cursor-pointer absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+            aria-label="Clear search"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
       </div>
     </div>
   );

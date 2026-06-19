@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { RecipeCard } from "@/components/recipeCard/RecipeCard";
-import { getFeaturedRecipes } from "@/lib/recipe/recipe.service";
+import { getFeaturedRecipes } from "@/app/(protected)/recipe/lib/recipe.service";
 
 export async function FeaturedRecipes() {
   const recipes = await getFeaturedRecipes();

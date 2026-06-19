@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import * as Yup from "yup";
+import { toast } from "sonner";
 import {
   signInWithCredentials,
   signInWithProvider,
@@ -24,18 +24,15 @@ const signInSchema = Yup.object({
 
 export const useSignInFormHelper = () => {
   const router = useRouter();
-  const [authError, setAuthError] = useState<string | null>(null);
 
   const handleSubmit = async (values: typeof initialValues) => {
-    setAuthError(null);
-
     const response = await signInWithCredentials(
       values.email,
       values.password,
     );
 
     if (!response.success) {
-      setAuthError(response.message);
+      toast.error(response.message);
       return;
     }
 
@@ -44,7 +41,6 @@ export const useSignInFormHelper = () => {
   };
 
   const handleSocialClick = async (provider: SocialLoginProvider) => {
-    setAuthError(null);
     await signInWithProvider(provider);
   };
 
@@ -54,6 +50,5 @@ export const useSignInFormHelper = () => {
     validateOnMount: true as const,
     handleSubmit,
     handleSocialClick,
-    authError,
   };
 };

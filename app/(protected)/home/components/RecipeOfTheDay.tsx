@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Clock, Sparkles, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getRecipeOfTheDay } from "@/lib/recipe/recipe.service";
+import { getRecipeOfTheDay } from "@/app/(protected)/recipe/lib/recipe.service";
 
 function formatCookTime(minutes: number) {
   if (minutes < 60) {
