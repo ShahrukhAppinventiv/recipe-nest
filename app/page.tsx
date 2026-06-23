@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
-import { getAuthSession } from "@/lib/auth";
 import { AUTH_ROUTES } from "@/lib/constants/constants";
 
-export default async function RootPage() {
-  const session = await getAuthSession();
-  redirect(session ? AUTH_ROUTES.HOME : AUTH_ROUTES.SIGN_IN);
+// Redirect to home — middleware handles unauthenticated users and
+// sends them to /sign-in before this page is reached.
+export default function RootPage() {
+  redirect(AUTH_ROUTES.HOME);
 }

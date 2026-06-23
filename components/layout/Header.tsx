@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -48,6 +48,28 @@ function getInitials(name?: string | null) {
   }
 
   return "RN";
+}
+
+function NavLinksFallback() {
+  return (
+    <nav
+      role="tablist"
+      aria-label="Main navigation"
+      className="flex items-center gap-1 overflow-x-auto"
+    >
+      {PROTECTED_NAV_ROUTES.map(({ label, href }) => (
+        <Link
+          key={href}
+          href={href}
+          role="tab"
+          aria-selected={false}
+          className="shrink-0 px-3 py-2 text-sm font-medium text-primary"
+        >
+          {label}
+        </Link>
+      ))}
+    </nav>
+  );
 }
 
 function NavLinks() {
@@ -198,7 +220,9 @@ export function Header({ savedBadge }: HeaderProps) {
           </Link>
 
           <div className="hidden flex-1 justify-center md:flex">
-            <NavLinks />
+            <Suspense fallback={<NavLinksFallback />}>
+              <NavLinks />
+            </Suspense>
           </div>
 
           <div className="flex items-center gap-2">
@@ -208,7 +232,9 @@ export function Header({ savedBadge }: HeaderProps) {
         </div>
 
         <div className="flex justify-center overflow-x-auto pt-2 md:hidden">
-          <NavLinks />
+          <Suspense fallback={<NavLinksFallback />}>
+            <NavLinks />
+          </Suspense>
         </div>
       </div>
     </header>

@@ -1,19 +1,21 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import Link from "next/link";
-
-export const metadata: Metadata = {
-  title: "Saved Recipes",
-  description: "All the recipes you have bookmarked, ready to cook whenever you are.",
-  robots: { index: false, follow: false },
-};
 import { Bookmark } from "lucide-react";
 import { redirect } from "next/navigation";
 import { getAuthSession } from "@/lib/auth";
 import { getSavedRecipesWithData } from "@/lib/saved-recipes/saved-recipe.service";
 import { RecipeCard } from "@/components/recipeCard/RecipeCard";
 import { AUTH_ROUTES } from "@/lib/constants/constants";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default async function SavedRecipesPage() {
+export const metadata: Metadata = {
+  title: "Saved Recipes",
+  description: "All the recipes you have bookmarked, ready to cook whenever you are.",
+  robots: { index: false, follow: false },
+};
+
+async function SavedRecipesContent() {
   const session = await getAuthSession();
 
   if (!session?.user?.id) {
@@ -24,7 +26,6 @@ export default async function SavedRecipesPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      {/* Page header */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
@@ -43,7 +44,6 @@ export default async function SavedRecipesPage() {
         </div>
       </div>
 
-      {/* Empty state */}
       {recipes.length === 0 ? (
         <div className="rounded-2xl border border-border/60 bg-card px-6 py-20 text-center shadow-soft">
           <Bookmark className="mx-auto h-12 w-12 text-muted-foreground/40" aria-hidden />
@@ -73,5 +73,32 @@ export default async function SavedRecipesPage() {
         </div>
       )}
     </div>
+  );
+}
+
+function SavedRecipesSkeleton() {
+  return (
+    <div className="flex flex-col gap-8" aria-busy aria-label="Loading saved recipes">
+      <div className="flex items-center gap-3">
+        <Skeleton className="h-10 w-10 rounded-full" />
+        <div className="space-y-1.5">
+          <Skeleton className="h-7 w-40" />
+          <Skeleton className="h-4 w-28" />
+        </div>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <Skeleton key={i} className="aspect-[4/3] rounded-xl" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function SavedRecipesPage() {
+  return (
+    <Suspense fallback={<SavedRecipesSkeleton />}>
+      <SavedRecipesContent />
+    </Suspense>
   );
 }
