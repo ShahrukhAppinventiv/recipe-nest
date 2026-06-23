@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Clock, Sparkles, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getRecipeOfTheDay } from "@/app/(protected)/recipe/lib/recipe.service";
+import { getRecipeOfTheDay } from "@/lib/recipe/recipe.service";
 
 function formatCookTime(minutes: number) {
   if (minutes < 60) {
@@ -71,7 +71,7 @@ export async function RecipeOfTheDay() {
                 </span>
 
                 <span>
-                  {recipe.cuisine} · {recipe.mealType}
+                  {recipe.cuisine}{recipe.mealType ? ` · ${recipe.mealType}` : ""}
                 </span>
 
                 <span className="inline-flex items-center gap-1">

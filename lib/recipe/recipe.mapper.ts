@@ -19,12 +19,42 @@ function toRecipeDifficulty(
   return undefined;
 }
 
-function mapRecipeTags(recipe: DbRecipeWithRelations) {
-  return (
-    recipe.recipe_tags
-      ?.map((row) => row.tags?.name)
-      .filter((name): name is string => Boolean(name)) ?? []
-  );
+function mapMealTypes(
+  rows: DbRecipeWithRelations["recipe_meal_types"],
+): string[] {
+  if (!rows || rows.length === 0) {
+    return [];
+  }
+
+  return rows
+    .map((row) => row.meal_types?.name?.trim() ?? "")
+    .filter(Boolean);
+}
+
+function mapTags(raw: unknown): string[] {
+  if (!raw) {
+    return [];
+  }
+
+  if (!Array.isArray(raw)) {
+    return [];
+  }
+
+  return raw
+    .map((item) => {
+      if (typeof item === "string") {
+        return item.trim();
+      }
+
+      if (item && typeof item === "object") {
+        const record = item as Record<string, unknown>;
+        const name = record.name ?? record.tag ?? record.label;
+        return typeof name === "string" ? name.trim() : "";
+      }
+
+      return "";
+    })
+    .filter(Boolean);
 }
 
 function parseJsonbTextList(value: unknown): string[] {
@@ -82,16 +112,18 @@ function parseJsonbTextList(value: unknown): string[] {
 }
 
 export function toRecipeCardData(recipe: DbRecipeWithRelations): RecipeCardData {
+  const mealTypes = mapMealTypes(recipe.recipe_meal_types);
+
   return {
     id: String(recipe.id),
     title: recipe.title ?? "Untitled recipe",
     image: recipe.image ?? "/recipe1.webp",
     rating: Number(recipe.rating_avg),
     cuisine: recipe.cuisines?.name ?? "Unknown",
-    mealType: recipe.meal_types?.name ?? "Unknown",
-    cookTimeMinutes: Number(recipe.cook_time ?? 0),
+    mealType: mealTypes[0] ?? "",
+    cookTimeMinutes: Number(recipe.cook_time_minutes ?? 0),
     difficulty: toRecipeDifficulty(recipe.difficulty),
-    tags: mapRecipeTags(recipe),
+    tags: mapTags(recipe.tags),
     href: `/recipe/${recipe.id}`,
   };
 }
@@ -108,14 +140,14 @@ export function toRecipeDetailData(
     image: recipe.image ?? "/recipe1.webp",
     rating: Number(recipe.rating_avg),
     reviewCount: Number(recipe.review_count ?? 0),
-    viewCount: Number(recipe.view_count ?? 0),
     cuisine: recipe.cuisines?.name ?? "Unknown",
-    mealType: recipe.meal_types?.name ?? "Unknown",
-    cookTimeMinutes: Number(recipe.cook_time ?? 0),
+    mealTypes: mapMealTypes(recipe.recipe_meal_types),
+    cookTimeMinutes: Number(recipe.cook_time_minutes ?? 0),
+    prepTimeMinutes: Number(recipe.prep_time_minutes ?? 0),
     servings: Number(recipe.servings ?? 0),
-    calories: Number(recipe.calories ?? 0),
+    caloriesPerServing: Number(recipe.calories_per_serving ?? 0),
     difficulty: toRecipeDifficulty(recipe.difficulty),
-    tags: mapRecipeTags(recipe),
+    tags: mapTags(recipe.tags),
     ingredients: parseJsonbTextList(recipe.ingredients),
     instructions: parseJsonbTextList(recipe.instructions),
     authorName: authorName || undefined,

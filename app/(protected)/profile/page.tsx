@@ -1,34 +1,30 @@
-import type { Session } from "next-auth";
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+
+export const metadata: Metadata = {
+  title: "My Profile",
+  description: "View and manage your RecipeNest account details.",
+  robots: { index: false, follow: false },
+};
 import { ProfileContent } from "./components/ProfileContent";
 import { getAuthSession } from "@/lib/auth";
 import { AUTH_ROUTES } from "@/lib/constants/constants";
 import { getUserProfile } from "@/lib/user/user.service";
-import type { UserProfile } from "@/lib/user/user.types";
-
-function profileFromSession(user: Session["user"]): UserProfile {
-  return {
-    id: user.id,
-    name: user.name ?? null,
-    email: user.email,
-    image: user.image ?? null,
-    role: user.role,
-    provider: null,
-    createdAt: null,
-    lastLoginAt: null,
-  };
-}
 
 export default async function ProfilePage() {
   const session = await getAuthSession();
 
-  if (!session?.user) {
+  if (!session?.user?.id) {
     redirect(AUTH_ROUTES.SIGN_IN);
   }
 
+  // Always read from the database — getUserProfile is cached with "use cache"
+  // and is invalidated by updateTag() in the updateProfileName action.
   const profile = await getUserProfile(session.user.id);
 
-  return (
-    <ProfileContent user={profile ?? profileFromSession(session.user)} />
-  );
+  if (!profile) {
+    redirect(AUTH_ROUTES.SIGN_IN);
+  }
+
+  return <ProfileContent user={profile} />;
 }

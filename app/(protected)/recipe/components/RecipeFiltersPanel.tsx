@@ -5,13 +5,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import type { FilterOption } from "../lib/recipe.types";
+import type { FilterOption } from "@/lib/recipe/recipe.types";
 import { useMemo, useState } from "react";
 import {
   STATIC_DIFFICULTY_OPTIONS,
   type FilterGroup,
   type RecipeFiltersState,
-} from "../lib/filter-options";
+} from "@/lib/recipe/filter-options";
 
 const FILTER_PREVIEW_COUNT = 5;
 

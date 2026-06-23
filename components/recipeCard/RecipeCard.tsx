@@ -10,11 +10,14 @@ import {
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import type { RecipeCardData, RecipeCardVariant } from "./types";
+import { SaveRecipeButton } from "./SaveRecipeButton";
 
 type RecipeCardProps = {
   recipe: RecipeCardData;
   variant?: RecipeCardVariant;
   className?: string;
+  /** When provided the save/bookmark button is shown on the card image. */
+  isSaved?: boolean;
 };
 
 function formatCookTime(minutes: number) {
@@ -40,13 +43,12 @@ function RecipeCardInner({
   recipe,
   variant,
   className,
+  isSaved,
 }: RecipeCardProps & { variant: RecipeCardVariant }) {
   return (
     <Card
-      size={variant === "compact" ? "sm" : "default"}
       className={cn(
         "h-full gap-3 pt-0 pb-4 shadow-soft transition-shadow hover:shadow-medium",
-        variant === "compact" && "pb-3",
         className,
       )}
     >
@@ -61,14 +63,16 @@ function RecipeCardInner({
       </div>
 
       <CardHeader className="gap-1.5">
-        <CardTitle
-          className={cn(
-            "line-clamp-2 group-hover:text-primary",
-            variant === "rich" && "text-lg",
-          )}
-        >
-          {recipe.title}
-        </CardTitle>
+        {/* Title row — save button sits on the right, aligned to the top of the title */}
+        <div className="flex items-start justify-between gap-2">
+          <CardTitle className="line-clamp-2 text-lg group-hover:text-primary">
+            {recipe.title}
+          </CardTitle>
+
+          {isSaved !== undefined ? (
+            <SaveRecipeButton recipeId={recipe.id} initialIsSaved={isSaved} />
+          ) : null}
+        </div>
 
         <div className="flex items-center gap-1 text-sm text-foreground">
           <Star className="h-3.5 w-3.5 fill-accent text-accent" aria-hidden />
@@ -76,7 +80,7 @@ function RecipeCardInner({
         </div>
 
         <CardDescription className="text-xs">
-          {recipe.cuisine} · {recipe.mealType}
+          {recipe.cuisine}{recipe.mealType ? ` · ${recipe.mealType}` : ""}
         </CardDescription>
       </CardHeader>
 
@@ -95,7 +99,7 @@ function RecipeCardInner({
           ) : null}
         </div>
 
-        {variant === "rich" && recipe.tags && recipe.tags.length > 0 ? (
+        {/* {variant === "rich" && recipe.tags && recipe.tags.length > 0 ? (
           <div className="mt-2 flex flex-wrap gap-1.5">
             {recipe.tags.map((tag) => (
               <span
@@ -106,7 +110,7 @@ function RecipeCardInner({
               </span>
             ))}
           </div>
-        ) : null}
+        ) : null} */}
       </CardContent>
     </Card>
   );
@@ -116,6 +120,7 @@ export function RecipeCard({
   recipe,
   variant = "compact",
   className,
+  isSaved,
 }: RecipeCardProps) {
   if (recipe.href) {
     return (
@@ -123,14 +128,14 @@ export function RecipeCard({
         href={recipe.href}
         className={cn("group block h-full", className)}
       >
-        <RecipeCardInner recipe={recipe} variant={variant} />
+        <RecipeCardInner recipe={recipe} variant={variant} isSaved={isSaved} />
       </Link>
     );
   }
 
   return (
     <article className={cn("group h-full", className)}>
-      <RecipeCardInner recipe={recipe} variant={variant} />
+      <RecipeCardInner recipe={recipe} variant={variant} isSaved={isSaved} />
     </article>
   );
 }

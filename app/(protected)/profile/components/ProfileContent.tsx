@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactElement } from "react";
+import { EditProfileModal } from "./EditProfileModal";
 import {
   Calendar,
   ChefHat,
@@ -10,7 +11,6 @@ import {
   Sparkles,
   User,
 } from "lucide-react";
-import { LogoutButton } from "@/components/layout/LogoutButton";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -100,7 +100,7 @@ export function ProfileContent({ user }: ProfileContentProps) {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(107,143,113,0.08),transparent_45%)]" />
 
         <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center">
-          {user.image ? (
+          {/* {user.image ? (
             <Image
               src={user.image}
               alt={displayName}
@@ -112,7 +112,10 @@ export function ProfileContent({ user }: ProfileContentProps) {
             <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary/10 text-2xl font-semibold text-primary ring-4 ring-primary/15">
               {getInitials(user.name)}
             </div>
-          )}
+          )} */}
+          <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary/10 text-6xl font-semibold text-primary ring-4 ring-primary/15">
+              {getInitials(user.name)}
+            </div>
 
           <div className="space-y-3">
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
@@ -121,9 +124,12 @@ export function ProfileContent({ user }: ProfileContentProps) {
             </div>
 
             <div>
-              <h1 className="font-heading text-3xl text-foreground sm:text-4xl">
-                {displayName}
-              </h1>
+              <div className="flex items-center gap-2.5">
+                <h1 className="font-heading text-3xl text-foreground sm:text-4xl">
+                  {displayName}
+                </h1>
+                <EditProfileModal currentName={user.name} />
+              </div>
               <p className="mt-1 text-sm text-muted-foreground">{user.email}</p>
             </div>
 

@@ -10,6 +10,7 @@ export const AUTH_ROUTES = {
   SIGN_UP: "/sign-up",
   HOME: "/home",
   PROFILE: "/profile",
+  SAVED: "/saved",
 } as const;
 
 export const PROTECTED_NAV_ROUTES = [
@@ -27,4 +28,5 @@ export const PROTECTED_ROUTE_PREFIXES = [
   "/about",
   "/contact",
   "/profile",
+  "/saved",
 ] as const;

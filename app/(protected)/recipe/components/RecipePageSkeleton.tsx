@@ -1,10 +1,9 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { RECIPE_PAGE_SIZE } from "../lib/recipe.params";
+import { RECIPE_PAGE_SIZE } from "@/lib/recipe/recipe.params";
 
 export function RecipeListSkeleton() {
   return (
     <div className="flex flex-col gap-4" aria-busy aria-label="Loading recipes">
-      <Skeleton className="h-5 w-40" />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {Array.from({ length: RECIPE_PAGE_SIZE }).map((_, index) => (

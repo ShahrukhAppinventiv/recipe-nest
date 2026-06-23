@@ -1,18 +1,20 @@
+"use client";
+
 import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { ReactElement } from "react";
 import {
   ArrowLeft,
   Calendar,
   Clock,
-  Eye,
   Flame,
   MessageSquare,
   Star,
+  Timer,
   User,
   Users,
 } from "lucide-react";
-import type { RecipeDetailData } from "../lib/recipe.types";
+import type { RecipeDetailData } from "@/lib/recipe/recipe.types";
 
 type RecipeDetailContentProps = {
   recipe: RecipeDetailData;
@@ -45,10 +47,6 @@ function formatReviewCount(count: number) {
   return `${count} ${count === 1 ? "review" : "reviews"}`;
 }
 
-function formatViewCount(count: number) {
-  return `${count.toLocaleString()} ${count === 1 ? "view" : "views"}`;
-}
-
 type StatItemProps = {
   icon: ReactElement;
   label: string;
@@ -68,11 +66,20 @@ function StatItem({ icon, label, value }: StatItemProps) {
 }
 
 export function RecipeDetailContent({ recipe }: RecipeDetailContentProps) {
+  const router = useRouter();
   const hasTags = recipe.tags && recipe.tags.length > 0;
   const hasIngredients = recipe.ingredients.length > 0;
   const hasInstructions = recipe.instructions.length > 0;
 
   const stats: StatItemProps[] = [];
+
+  if (recipe.prepTimeMinutes > 0) {
+    stats.push({
+      icon: <Timer className="h-3.5 w-3.5" aria-hidden />,
+      label: "Prep time",
+      value: formatCookTime(recipe.prepTimeMinutes),
+    });
+  }
 
   if (recipe.cookTimeMinutes > 0) {
     stats.push({
@@ -90,39 +97,33 @@ export function RecipeDetailContent({ recipe }: RecipeDetailContentProps) {
     });
   }
 
-  if (recipe.calories > 0) {
+  if (recipe.caloriesPerServing > 0) {
     stats.push({
       icon: <Flame className="h-3.5 w-3.5" aria-hidden />,
       label: "Calories",
-      value: `${recipe.calories.toLocaleString()} kcal`,
+      value: `${recipe.caloriesPerServing.toLocaleString()} kcal`,
     });
   }
 
-  if (recipe.reviewCount > 0) {
-    stats.push({
-      icon: <MessageSquare className="h-3.5 w-3.5" aria-hidden />,
-      label: "Reviews",
-      value: formatReviewCount(recipe.reviewCount),
-    });
-  }
-
-  if (recipe.viewCount > 0) {
-    stats.push({
-      icon: <Eye className="h-3.5 w-3.5" aria-hidden />,
-      label: "Views",
-      value: formatViewCount(recipe.viewCount),
-    });
-  }
+  // if (recipe.reviewCount > 0) {
+  //   stats.push({
+  //     icon: <MessageSquare className="h-3.5 w-3.5" aria-hidden />,
+  //     label: "Reviews",
+  //     value: formatReviewCount(recipe.reviewCount),
+  //   });
+  // }
 
   return (
     <div className="flex flex-col gap-6">
-      <Link
-        href="/recipe"
-        className="inline-flex w-fit items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-      >
-        <ArrowLeft className="h-4 w-4" aria-hidden />
-        Back to recipes
-      </Link>
+      {/* <BackButton /> */}
+      <button
+      type="button"
+      onClick={() => router.back()}
+      className="inline-flex w-fit cursor-pointer items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+    >
+      <ArrowLeft className="h-4 w-4" aria-hidden />
+      Go Back
+    </button>
 
       <article className="overflow-hidden rounded-3xl border border-border/60 bg-card shadow-soft">
         <div className="grid lg:grid-cols-2">
@@ -146,15 +147,18 @@ export function RecipeDetailContent({ recipe }: RecipeDetailContentProps) {
               <span className="inline-flex items-center gap-1 text-foreground">
                 <Star className="h-4 w-4 fill-accent text-accent" aria-hidden />
                 <span className="font-medium">{recipe.rating.toFixed(1)}</span>
-                {recipe.reviewCount > 0 ? (
+                {/* {recipe.reviewCount > 0 ? (
                   <span className="text-muted-foreground">
                     ({formatReviewCount(recipe.reviewCount)})
                   </span>
-                ) : null}
+                ) : null} */}
               </span>
 
               <span>
-                {recipe.cuisine} · {recipe.mealType}
+                {recipe.cuisine}
+                {recipe.mealTypes.length > 0
+                  ? ` · ${recipe.mealTypes.join(", ")}`
+                  : ""}
               </span>
             </div>
 

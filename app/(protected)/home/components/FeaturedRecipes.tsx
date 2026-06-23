@@ -1,9 +1,13 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { RecipeCard } from "@/components/recipeCard/RecipeCard";
-import { getFeaturedRecipes } from "@/app/(protected)/recipe/lib/recipe.service";
+import { getFeaturedRecipes } from "@/lib/recipe/recipe.service";
 
-export async function FeaturedRecipes() {
+type FeaturedRecipesProps = {
+  savedRecipeIds?: Set<string>;
+};
+
+export async function FeaturedRecipes({ savedRecipeIds }: FeaturedRecipesProps) {
   const recipes = await getFeaturedRecipes();
 
   if (recipes.length === 0) {
@@ -36,7 +40,16 @@ export async function FeaturedRecipes() {
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {recipes.map((recipe) => (
-          <RecipeCard key={recipe.id} recipe={recipe} variant="compact" />
+          <RecipeCard
+            key={recipe.id}
+            recipe={recipe}
+            variant="compact"
+            isSaved={
+              savedRecipeIds !== undefined
+                ? savedRecipeIds.has(recipe.id)
+                : undefined
+            }
+          />
         ))}
       </div>
     </section>

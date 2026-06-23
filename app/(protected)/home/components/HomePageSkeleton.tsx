@@ -14,7 +14,7 @@ function RecipeCardSkeleton() {
   );
 }
 
-function RecipeSectionSkeleton({ cards = 4 }: { cards?: number }) {
+export function RecipeSectionSkeleton({ cards = 4 }: { cards?: number }) {
   return (
     <section aria-hidden>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">

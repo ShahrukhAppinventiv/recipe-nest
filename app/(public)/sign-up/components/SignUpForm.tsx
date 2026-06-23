@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Form, Formik } from "formik";
 import { InputField } from "@/components/forms/InputField";
 import { PasswordField } from "@/components/forms/PasswordField";
-import { RecipeButton } from "@/components/ui/RecipeButton";
+import { Button } from "@/components/ui/button";
 import { useSignUpFormHelper } from "./SignUpForm.helper";
 
 
@@ -69,13 +69,13 @@ export function SignUpForm() {
                 autoComplete="new-password"
               />
 
-              <RecipeButton
+              <Button
                 type="submit"
-                fullWidth
+                className="w-full"
                 disabled={isSubmitting || !isValid}
               >
                 {isSubmitting ? "Creating account..." : "Sign Up"}
-              </RecipeButton>
+              </Button>
             </Form>
 
             <div className="relative">
@@ -90,9 +90,9 @@ export function SignUpForm() {
             </div>
 
             <div className="flex flex-col gap-3">
-              <RecipeButton
+              <Button
                 variant="outline"
-                fullWidth
+                className="w-full"
                 disabled={isSubmitting}
                 onClick={() => handleSocialClick("google")}
               >
@@ -104,10 +104,10 @@ export function SignUpForm() {
                   className="h-5 w-5 shrink-0"
                 />
                 Continue with Google
-              </RecipeButton>
-              <RecipeButton
+              </Button>
+              <Button
                 variant="outline"
-                fullWidth
+                className="w-full"
                 disabled={isSubmitting}
                 onClick={() => handleSocialClick("github")}
               >
@@ -119,7 +119,7 @@ export function SignUpForm() {
                   className="h-5 w-5 shrink-0"
                 />
                 Continue with GitHub
-              </RecipeButton>
+              </Button>
             </div>
           </>
         )}

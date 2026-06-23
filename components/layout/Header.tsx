@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { ChevronDown, ChefHat, LogOut, User } from "lucide-react";
 import {
   AlertDialog,
@@ -25,12 +26,15 @@ import {
 import { AUTH_ROUTES, PROTECTED_NAV_ROUTES } from "@/lib/constants/constants";
 import { signOutUser } from "@/lib/services/auth.service";
 
+type SessionUser = {
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+};
+
 type HeaderProps = {
-  user?: {
-    name?: string | null;
-    email?: string | null;
-    image?: string | null;
-  } | null;
+  /** Server-rendered saved-recipes badge, passed as a slot from the layout. */
+  savedBadge?: React.ReactNode;
 };
 
 function getInitials(name?: string | null) {
@@ -80,11 +84,7 @@ function NavLinks() {
   );
 }
 
-function UserProfileSection({
-  user,
-}: {
-  user: NonNullable<HeaderProps["user"]>;
-}) {
+function UserProfileSection({ user }: { user: SessionUser }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
   const displayName = user.name?.trim() || "RecipeNest User";
@@ -102,7 +102,7 @@ function UserProfileSection({
             className="flex cursor-pointer items-center gap-2 rounded-full py-1 pl-1 pr-2 outline-none transition-colors hover:bg-primary/5 data-[state=open]:bg-primary/5 focus:outline-none"
             aria-label="Open profile menu"
           >
-            {user.image ? (
+            {/* {user.image ? (
               <Image
                 src={user.image}
                 alt={displayName}
@@ -114,7 +114,10 @@ function UserProfileSection({
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-sm font-medium text-primary">
                 {getInitials(user.name)}
               </div>
-            )}
+            )} */}
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-sm font-medium text-primary">
+                {getInitials(user.name)}
+              </div>
 
             <span className="max-w-[8rem] truncate text-sm font-medium text-foreground sm:max-w-[10rem]">
               {displayName}
@@ -171,7 +174,10 @@ function UserProfileSection({
   );
 }
 
-export function Header({ user }: HeaderProps) {
+export function Header({ savedBadge }: HeaderProps) {
+  const { data: session } = useSession();
+  const user = session?.user;
+
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/95 shadow-soft backdrop-blur-sm">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
@@ -195,7 +201,10 @@ export function Header({ user }: HeaderProps) {
             <NavLinks />
           </div>
 
-          {user ? <UserProfileSection user={user} /> : null}
+          <div className="flex items-center gap-2">
+            {savedBadge}
+            {user ? <UserProfileSection user={user} /> : null}
+          </div>
         </div>
 
         <div className="flex justify-center overflow-x-auto pt-2 md:hidden">

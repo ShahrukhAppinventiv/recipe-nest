@@ -125,10 +125,16 @@ export const authOptions: NextAuthOptions = {
 
       return true;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
         token.role = user.role;
+      }
+
+      // When the client calls useSession().update({ name }), propagate the
+      // new name into the JWT so the session reflects it immediately.
+      if (trigger === "update" && typeof session?.name === "string") {
+        token.name = session.name;
       }
 
       return token;

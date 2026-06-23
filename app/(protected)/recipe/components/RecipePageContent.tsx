@@ -2,17 +2,17 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import type { FilterOption } from "../lib/recipe.types";
+import type { FilterOption } from "@/lib/recipe/recipe.types";
 import {
   EMPTY_RECIPE_FILTERS,
   type FilterGroup,
   type RecipeFiltersState,
-} from "../lib/filter-options";
+} from "@/lib/recipe/filter-options";
 import {
   parseRecipeParams,
   type RecipeSort,
   recipeFiltersToQueryString,
-} from "../lib/recipe.params";
+} from "@/lib/recipe/recipe.params";
 import { RecipeFilters } from "./RecipeFilters";
 import { RecipeHero } from "./RecipeHero";
 import { RecipeMobileFilters } from "./RecipeMobileFilters";

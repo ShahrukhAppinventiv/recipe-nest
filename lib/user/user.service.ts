@@ -1,3 +1,4 @@
+import { cacheLife, cacheTag } from "next/cache";
 import type { UserProfile } from "@/lib/user/user.types";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -26,6 +27,12 @@ function toUserProfile(row: DbUserProfile): UserProfile {
 }
 
 export async function getUserProfile(userId: string): Promise<UserProfile | null> {
+  "use cache";
+  // Cache per user. updateTag(`user-profile-${userId}`) in the update action
+  // expires this entry immediately so the next render is always fresh.
+  cacheTag(`user-profile-${userId}`);
+  cacheLife({ stale: 5 * 60, revalidate: 5 * 60, expire: 60 * 60 });
+
   const id = Number(userId);
 
   if (!Number.isInteger(id) || id <= 0) {

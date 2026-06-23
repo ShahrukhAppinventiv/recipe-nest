@@ -11,8 +11,8 @@ import {
 } from "@/components/ui/pagination";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
-import type { RecipeFiltersState } from "../lib/filter-options";
-import { type RecipeSort, recipeFiltersToQueryString } from "../lib/recipe.params";
+import type { RecipeFiltersState } from "@/lib/recipe/filter-options";
+import { type RecipeSort, recipeFiltersToQueryString } from "@/lib/recipe/recipe.params";
 
 type RecipePaginationProps = {
   page: number;

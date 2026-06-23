@@ -6,6 +6,8 @@ type RecipeListProps = {
   total: number;
   page: number;
   pageSize: number;
+  /** When provided, each card shows a save/bookmark button. */
+  savedRecipeIds?: Set<string>;
 };
 
 export function RecipeList({
@@ -13,18 +15,17 @@ export function RecipeList({
   total,
   page,
   pageSize,
+  savedRecipeIds,
 }: RecipeListProps) {
   const start = total === 0 ? 0 : (page - 1) * pageSize + 1;
   const end = Math.min(page * pageSize, total);
 
+  // suppress unused variable warnings
+  void start;
+  void end;
+
   return (
     <section aria-label="Recipe list" className="min-w-0">
-      {/* <p className="mb-4 text-sm text-muted-foreground">
-        {total === 0
-          ? "No recipes found"
-          : `Showing ${start}-${end} of ${total} ${total === 1 ? "recipe" : "recipes"}`}
-      </p> */}
-
       {recipes.length === 0 ? (
         <div className="rounded-2xl border border-border/60 bg-card px-6 py-16 text-center shadow-soft">
           <p className="font-heading text-lg text-foreground">
@@ -37,7 +38,16 @@ export function RecipeList({
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {recipes.map((recipe) => (
-            <RecipeCard key={recipe.id} recipe={recipe} variant="rich" />
+            <RecipeCard
+              key={recipe.id}
+              recipe={recipe}
+              variant="rich"
+              isSaved={
+                savedRecipeIds !== undefined
+                  ? savedRecipeIds.has(recipe.id)
+                  : undefined
+              }
+            />
           ))}
         </div>
       )}

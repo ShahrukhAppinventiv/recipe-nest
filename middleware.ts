@@ -52,6 +52,7 @@ export const config = {
     "/about/:path*",
     "/contact/:path*",
     "/profile/:path*",
+    "/saved/:path*",
     "/sign-in",
     "/sign-up",
   ],

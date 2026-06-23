@@ -9,22 +9,21 @@ export type DbRecipe = {
   instructions?: unknown;
   image: string | null;
   difficulty: string | null;
-  cook_time: number | null;
+  cook_time_minutes: number | null;
+  prep_time_minutes: number | null;
   servings: number | null;
-  calories: number | null;
+  calories_per_serving: number | null;
   rating_avg: number;
   review_count: number | null;
-  view_count: number | null;
   status: string | null;
   cuisine_id: number | null;
-  meal_type_id: number | null;
   created_by: number | null;
+  tags?: unknown;
 };
 
 export type DbRecipeWithRelations = DbRecipe & {
   cuisines: { name: string } | null;
-  meal_types: { name: string } | null;
-  recipe_tags: { tags: { name: string } | null }[] | null;
+  recipe_meal_types: { meal_types: { name: string } | null }[] | null;
 };
 
 export type DbRecipeDetailWithRelations = DbRecipeWithRelations & {
@@ -45,12 +44,12 @@ export type RecipeDetailData = {
   image: string;
   rating: number;
   reviewCount: number;
-  viewCount: number;
   cuisine: string;
-  mealType: string;
+  mealTypes: string[];
   cookTimeMinutes: number;
+  prepTimeMinutes: number;
   servings: number;
-  calories: number;
+  caloriesPerServing: number;
   difficulty?: "Easy" | "Medium" | "Hard";
   tags?: string[];
   ingredients: string[];
