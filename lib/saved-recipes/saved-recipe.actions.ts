@@ -1,84 +1,58 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
+import { apiFetchAuth } from "@/lib/api/client";
 import { getAuthSession } from "@/lib/auth";
-import { createAdminClient } from "@/lib/supabase/admin";
+import {
+  savedRecipesCountTag,
+  savedRecipesListTag,
+} from "./saved-recipe.service";
 import type { ToggleSaveResult } from "./saved-recipe.types";
 
-/**
- * Revalidates every route that renders saved-recipe state so they all
- * pick up the latest data after a save/unsave action.
- */
-function revalidateSavedPaths() {
-  revalidatePath("/home");
+function revalidateAfterToggle(userId: string) {
+  updateTag("featured-recipes");
+  updateTag("latest-recipes");
+  // updateTag("recipe-of-the-day");
+  updateTag(savedRecipesCountTag(userId));
+  updateTag(savedRecipesListTag(userId));
   revalidatePath("/recipe");
   revalidatePath("/saved");
 }
 
-/**
- * Toggles the saved state of a recipe for the currently authenticated user.
- * - If the recipe is not yet saved → inserts a row (saved = true).
- * - If the recipe is already saved → deletes the row (saved = false).
- *
- * Revalidates the home and saved pages so server components pick up the change.
- */
 export async function toggleSaveRecipe(
   recipeId: string,
 ): Promise<ToggleSaveResult> {
   const session = await getAuthSession();
 
-  if (!session?.user?.id) {
+  if (!session?.user?.id || !session.accessToken) {
     return { success: false, saved: false, message: "Not authenticated" };
   }
 
-  const numericUserId = Number(session.user.id);
-  const numericRecipeId = Number(recipeId);
-
-  if (
-    !Number.isInteger(numericUserId) ||
-    numericUserId <= 0 ||
-    !Number.isInteger(numericRecipeId) ||
-    numericRecipeId <= 0
-  ) {
-    return { success: false, saved: false, message: "Invalid ID" };
+  const trimmedRecipeId = recipeId.trim();
+  if (!trimmedRecipeId) {
+    return { success: false, saved: false, message: "Invalid recipe" };
   }
 
-  const supabase = createAdminClient();
+  try {
+    const result = await apiFetchAuth<ToggleSaveResult>(
+      `/api/users/${session.user.id}/saved-recipes/${trimmedRecipeId}/toggle`,
+      session.accessToken,
+      { method: "POST" },
+    );
 
-  // Check current state
-  const { data: existing } = await supabase
-    .from("saved_recipes")
-    .select("id")
-    .eq("user_id", numericUserId)
-    .eq("recipe_id", numericRecipeId)
-    .maybeSingle();
-
-  if (existing) {
-    // Already saved → unsave
-    const { error } = await supabase
-      .from("saved_recipes")
-      .delete()
-      .eq("user_id", numericUserId)
-      .eq("recipe_id", numericRecipeId);
-
-    if (error) {
-      return { success: false, saved: true, message: error.message };
+    if (!result.success) {
+      return {
+        success: false,
+        saved: result.saved,
+        message: result.message ?? "Could not update saved recipe",
+      };
     }
 
-    revalidateSavedPaths();
-    return { success: true, saved: false };
+    revalidateAfterToggle(session.user.id);
+    return { success: true, saved: result.saved };
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Could not update saved recipe";
+    return { success: false, saved: false, message };
   }
-
-  // Not saved → save
-  const { error } = await supabase.from("saved_recipes").insert({
-    user_id: numericUserId,
-    recipe_id: numericRecipeId,
-  });
-
-  if (error) {
-    return { success: false, saved: false, message: error.message };
-  }
-
-  revalidateSavedPaths();
-  return { success: true, saved: true };
 }

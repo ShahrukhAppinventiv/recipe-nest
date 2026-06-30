@@ -1,7 +1,9 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
+import { Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import type { FilterOption } from "@/lib/recipe/recipe.types";
 import {
   EMPTY_RECIPE_FILTERS,
@@ -14,7 +16,6 @@ import {
   recipeFiltersToQueryString,
 } from "@/lib/recipe/recipe.params";
 import { RecipeFilters } from "./RecipeFilters";
-import { RecipeHero } from "./RecipeHero";
 import { RecipeMobileFilters } from "./RecipeMobileFilters";
 import { RecipeSearch } from "./RecipeSearch";
 
@@ -35,6 +36,7 @@ export function RecipePageContent({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [filters, setFilters] = useState(initialFilters);
+  const [isPending, startTransition] = useTransition();
   const filtersRef = useRef(filters);
 
   const sort: RecipeSort =
@@ -67,7 +69,9 @@ export function RecipePageContent({
     );
     const href = query ? `${pathname}?${query}` : pathname;
 
-    router.replace(href, { scroll: false });
+    startTransition(() => {
+      router.replace(href, { scroll: false });
+    });
   }
 
   function commitFilters(next: RecipeFiltersState) {
@@ -110,15 +114,18 @@ export function RecipePageContent({
   };
 
   return (
-    <div className="flex flex-col gap-8">
-      <RecipeHero />
+    <div className="grid gap-8 lg:grid-cols-[260px_1fr]">
+      <RecipeFilters {...filterProps} />
 
-      <div className="grid gap-8 lg:grid-cols-[260px_1fr]">
-        <RecipeFilters {...filterProps} />
-
-        <div className="flex min-w-0 flex-col gap-4">
-          <RecipeSearch value={filters.search} onChange={setSearch} />
-          <RecipeMobileFilters {...filterProps} />
+      <div className="flex min-w-0 flex-col gap-4">
+        <RecipeSearch value={filters.search} onChange={setSearch} />
+        <RecipeMobileFilters {...filterProps} />
+        <div className={cn("relative transition-opacity duration-200", isPending && "opacity-60 pointer-events-none")}>
+          {isPending && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/30 backdrop-blur-[1px] min-h-[200px]">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          )}
           {children}
         </div>
       </div>

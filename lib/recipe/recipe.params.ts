@@ -103,3 +103,35 @@ export function recipeFiltersToQueryString(
 
   return searchParams.toString();
 }
+
+/** RecipeSearchParams → backend query string for GET /api/recipes */
+export function recipeSearchParamsToQueryString(
+  params: RecipeSearchParams,
+): string {
+  const searchParams = new URLSearchParams();
+
+  if (params.search) {
+    searchParams.set("search", params.search);
+  }
+
+  if (params.cuisineIds.length > 0) {
+    searchParams.set("cuisineIds", params.cuisineIds.join(","));
+  }
+
+  if (params.mealTypeIds.length > 0) {
+    searchParams.set("mealTypeIds", params.mealTypeIds.join(","));
+  }
+
+  if (params.difficulties.length > 0) {
+    searchParams.set("difficulties", params.difficulties.join(","));
+  }
+
+  if (params.sort === "rating") {
+    searchParams.set("sort", "rating");
+  }
+
+  searchParams.set("page", String(params.page));
+  searchParams.set("pageSize", String(params.pageSize));
+
+  return searchParams.toString();
+}

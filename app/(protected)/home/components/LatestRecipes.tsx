@@ -1,15 +1,13 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import type { RecipeCardData } from "@/components/recipeCard/types";
 import { RecipeCard } from "@/components/recipeCard/RecipeCard";
-import { getLatestRecipes } from "@/lib/recipe/recipe.service";
 
 type LatestRecipesProps = {
-  savedRecipeIds?: Set<string>;
+  recipes: RecipeCardData[];
 };
 
-export async function LatestRecipes({ savedRecipeIds }: LatestRecipesProps) {
-  const recipes = await getLatestRecipes();
-
+export function LatestRecipes({ recipes }: LatestRecipesProps) {
   if (recipes.length === 0) {
     return null;
   }
@@ -44,11 +42,7 @@ export async function LatestRecipes({ savedRecipeIds }: LatestRecipesProps) {
             key={recipe.id}
             recipe={recipe}
             variant="compact"
-            isSaved={
-              savedRecipeIds !== undefined
-                ? savedRecipeIds.has(recipe.id)
-                : undefined
-            }
+            isSaved={recipe.isSaved}
           />
         ))}
       </div>

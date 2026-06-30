@@ -11,6 +11,8 @@ export type RecipeCardData = {
   difficulty?: RecipeDifficulty;
   tags?: string[];
   href?: string;
+  /** Whether the logged-in user saved this recipe (from backend API). */
+  isSaved?: boolean;
 };
 
 export type RecipeCardVariant = "compact" | "rich";

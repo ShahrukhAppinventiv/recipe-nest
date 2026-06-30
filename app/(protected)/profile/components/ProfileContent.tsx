@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ReactElement } from "react";
 import { EditProfileModal } from "./EditProfileModal";
+import { ViewImageModal } from "@/components/ViewImageModal";
 import {
   Calendar,
   ChefHat,
@@ -99,23 +100,34 @@ export function ProfileContent({ user }: ProfileContentProps) {
       <section className="relative overflow-hidden rounded-3xl border border-border/60 bg-card p-6 shadow-soft sm:p-8">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(107,143,113,0.08),transparent_45%)]" />
 
+        <div className="absolute right-6 top-6 sm:right-8 sm:top-8 z-10">
+          <EditProfileModal currentName={user.name} currentImage={user.image} />
+        </div>
+
         <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center">
-          {/* {user.image ? (
-            <Image
-              src={user.image}
-              alt={displayName}
-              width={96}
-              height={96}
-              className="h-24 w-24 rounded-full object-cover ring-4 ring-primary/15"
-            />
-          ) : (
-            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary/10 text-2xl font-semibold text-primary ring-4 ring-primary/15">
+          <ViewImageModal
+            src={user.image ?? null}
+            alt={displayName}
+            fallbackText={getInitials(user.name)}
+          >
+            {user.image ? (
+              <Image
+                src={user.image}
+                alt={displayName}
+                width={96}
+                height={96}
+                unoptimized
+                className="h-24 w-24 rounded-full object-cover ring-4 ring-primary/15"
+              />
+            ) : (
+              <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary/10 text-2xl font-semibold text-primary ring-4 ring-primary/15">
+                {getInitials(user.name)}
+              </div>
+            )}
+          </ViewImageModal>
+          {/* <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary/10 text-6xl font-semibold text-primary ring-4 ring-primary/15">
               {getInitials(user.name)}
-            </div>
-          )} */}
-          <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary/10 text-6xl font-semibold text-primary ring-4 ring-primary/15">
-              {getInitials(user.name)}
-            </div>
+            </div> */}
 
           <div className="space-y-3">
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
@@ -124,12 +136,9 @@ export function ProfileContent({ user }: ProfileContentProps) {
             </div>
 
             <div>
-              <div className="flex items-center gap-2.5">
-                <h1 className="font-heading text-3xl text-foreground sm:text-4xl">
-                  {displayName}
-                </h1>
-                <EditProfileModal currentName={user.name} />
-              </div>
+              <h1 className="font-heading text-3xl text-foreground sm:text-4xl">
+                {displayName}
+              </h1>
               <p className="mt-1 text-sm text-muted-foreground">{user.email}</p>
             </div>
 
@@ -189,7 +198,7 @@ export function ProfileContent({ user }: ProfileContentProps) {
             />
 
             <Separator />
-{/* 
+            {/* 
             <DetailRow
               icon={<Calendar className="h-4 w-4" aria-hidden />}
               label="Last login"
@@ -223,7 +232,7 @@ export function ProfileContent({ user }: ProfileContentProps) {
               </Button>
             </CardContent>
           </Card>
-{/* 
+          {/* 
           <Card className="shadow-soft">
             <CardHeader>
               <CardTitle className="text-lg">Session</CardTitle>

@@ -56,6 +56,8 @@ export type RecipeDetailData = {
   instructions: string[];
   authorName?: string;
   createdAt: string;
+  /** Whether the logged-in user saved this recipe (from backend API). */
+  isSaved?: boolean;
 };
 
 export type RecipeSort = "latest" | "rating";

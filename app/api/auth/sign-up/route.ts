@@ -1,7 +1,14 @@
-import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { apiFetchPublic } from "@/lib/api/client";
 import type { ApiResponse } from "@/lib/types/api.types";
+
+type RegisterResponse = {
+  id: string;
+  email: string;
+  name: string | null;
+  image: string | null;
+  role: string;
+};
 
 export async function POST(request: Request) {
   try {
@@ -20,65 +27,34 @@ export async function POST(request: Request) {
       );
     }
 
-    const supabase = createAdminClient();
-
-    const { data: existingUser } = await supabase
-      .from("users")
-      .select("id")
-      .eq("email", email)
-      .maybeSingle();
-
-    if (existingUser) {
-      return NextResponse.json<ApiResponse>(
-        {
-          success: false,
-          message: "An account with this email already exists",
-        },
-        { status: 409 },
-      );
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 12);
-
-    const { data, error } = await supabase
-      .from("users")
-      .insert({
-        name,
-        email,
-        password: hashedPassword,
-        provider: "credentials",
-        role: "USER",
-      })
-      .select("id, email, name, role")
-      .single();
-
-    if (error || !data) {
-      return NextResponse.json<ApiResponse>(
-        {
-          success: false,
-          message: "Failed to create account",
-          error,
-        },
-        { status: 500 },
-      );
-    }
+    const user = await apiFetchPublic<RegisterResponse>("/api/auth/register", {
+      method: "POST",
+      body: JSON.stringify({ name, email, password }),
+    });
 
     return NextResponse.json<ApiResponse>(
       {
         success: true,
         message: "Account created successfully",
-        data,
+        data: user,
       },
       { status: 201 },
     );
   } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Something went wrong while creating your account";
+
+    const status = message.toLowerCase().includes("already exists") ? 409 : 500;
+
     return NextResponse.json<ApiResponse>(
       {
         success: false,
-        message: "Something went wrong while creating your account",
+        message,
         error,
       },
-      { status: 500 },
+      { status },
     );
   }
 }

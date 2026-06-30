@@ -6,8 +6,6 @@ type RecipeListProps = {
   total: number;
   page: number;
   pageSize: number;
-  /** When provided, each card shows a save/bookmark button. */
-  savedRecipeIds?: Set<string>;
 };
 
 export function RecipeList({
@@ -15,7 +13,6 @@ export function RecipeList({
   total,
   page,
   pageSize,
-  savedRecipeIds,
 }: RecipeListProps) {
   const start = total === 0 ? 0 : (page - 1) * pageSize + 1;
   const end = Math.min(page * pageSize, total);
@@ -42,11 +39,7 @@ export function RecipeList({
               key={recipe.id}
               recipe={recipe}
               variant="rich"
-              isSaved={
-                savedRecipeIds !== undefined
-                  ? savedRecipeIds.has(recipe.id)
-                  : undefined
-              }
+              isSaved={recipe.isSaved}
             />
           ))}
         </div>

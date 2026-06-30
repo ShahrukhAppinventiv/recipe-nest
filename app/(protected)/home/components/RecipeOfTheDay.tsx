@@ -1,8 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Clock, Sparkles, Star } from "lucide-react";
+import type { RecipeSpotlightData } from "@/components/recipeCard/types";
 import { Button } from "@/components/ui/button";
-import { getRecipeOfTheDay } from "@/lib/recipe/recipe.service";
+
+type RecipeOfTheDayProps = {
+  recipe: RecipeSpotlightData | null;
+};
 
 function formatCookTime(minutes: number) {
   if (minutes < 60) {
@@ -19,9 +23,7 @@ function formatCookTime(minutes: number) {
   return `${hours} hr ${remainingMinutes} min`;
 }
 
-export async function RecipeOfTheDay() {
-  const recipe = await getRecipeOfTheDay();
-
+export function RecipeOfTheDay({ recipe }: RecipeOfTheDayProps) {
   if (!recipe) {
     return null;
   }

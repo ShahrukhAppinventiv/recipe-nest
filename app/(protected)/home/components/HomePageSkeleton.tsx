@@ -34,6 +34,53 @@ export function RecipeSectionSkeleton({ cards = 4 }: { cards?: number }) {
   );
 }
 
+function RecipeOfTheDaySkeleton() {
+  return (
+    <section aria-hidden>
+      <div className="mb-6 space-y-2">
+        <Skeleton className="h-8 w-52 sm:h-9" />
+        <Skeleton className="h-4 w-72 max-w-full" />
+      </div>
+
+      <div className="overflow-hidden rounded-3xl border border-border/60 bg-card shadow-soft">
+        <div className="grid lg:grid-cols-2">
+          <Skeleton className="aspect-[4/3] min-h-[16rem] rounded-none lg:aspect-auto lg:min-h-[22rem]" />
+          <div className="flex flex-col justify-center gap-5 p-6 sm:p-8">
+            <Skeleton className="h-7 w-28 rounded-full" />
+            <Skeleton className="h-10 w-full max-w-sm" />
+            <div className="flex flex-wrap gap-3">
+              <Skeleton className="h-4 w-12" />
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-4 w-20" />
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-4/5" />
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Skeleton className="h-7 w-24 rounded-full" />
+              <Skeleton className="h-7 w-28 rounded-full" />
+              <Skeleton className="h-7 w-20 rounded-full" />
+            </div>
+            <Skeleton className="h-10 w-36 rounded-xl" />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function HomeRecipesSkeleton() {
+  return (
+    <div className="flex flex-col gap-16" aria-busy="true" aria-label="Loading recipes">
+      <RecipeSectionSkeleton />
+      <RecipeSectionSkeleton />
+      <RecipeOfTheDaySkeleton />
+    </div>
+  );
+}
+
 export function HomePageSkeleton() {
   return (
     <div
@@ -65,42 +112,7 @@ export function HomePageSkeleton() {
         </div>
       </section>
 
-      <RecipeSectionSkeleton />
-      <RecipeSectionSkeleton />
-
-      {/* Recipe of the day */}
-      <section aria-hidden>
-        <div className="mb-6 space-y-2">
-          <Skeleton className="h-8 w-52 sm:h-9" />
-          <Skeleton className="h-4 w-72 max-w-full" />
-        </div>
-
-        <div className="overflow-hidden rounded-3xl border border-border/60 bg-card shadow-soft">
-          <div className="grid lg:grid-cols-2">
-            <Skeleton className="aspect-[4/3] min-h-[16rem] rounded-none lg:aspect-auto lg:min-h-[22rem]" />
-            <div className="flex flex-col justify-center gap-5 p-6 sm:p-8">
-              <Skeleton className="h-7 w-28 rounded-full" />
-              <Skeleton className="h-10 w-full max-w-sm" />
-              <div className="flex flex-wrap gap-3">
-                <Skeleton className="h-4 w-12" />
-                <Skeleton className="h-4 w-32" />
-                <Skeleton className="h-4 w-20" />
-              </div>
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-4/5" />
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <Skeleton className="h-7 w-24 rounded-full" />
-                <Skeleton className="h-7 w-28 rounded-full" />
-                <Skeleton className="h-7 w-20 rounded-full" />
-              </div>
-              <Skeleton className="h-10 w-36 rounded-xl" />
-            </div>
-          </div>
-        </div>
-      </section>
+      <HomeRecipesSkeleton />
     </div>
   );
 }

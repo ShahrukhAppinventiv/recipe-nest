@@ -12,9 +12,10 @@ import { AUTH_ROUTES } from "@/lib/constants/constants";
 // ---------------------------------------------------------------------------
 async function SavedBadge() {
   const session = await getAuthSession();
-  const count = session?.user?.id
-    ? await getSavedRecipesCount(session.user.id)
-    : 0;
+  const count =
+    session?.user?.id && session.accessToken
+      ? await getSavedRecipesCount(session.user.id, session.accessToken)
+      : 0;
 
   return (
     <Link

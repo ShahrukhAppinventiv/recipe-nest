@@ -1,22 +1,24 @@
-import { cache } from "react";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { RecipeDetailContent } from "./components/RecipeDetailContent";
+import { getAuthSession } from "@/lib/auth";
 import { getRecipeById } from "@/lib/recipe/recipe.service";
+import { RecipeDetailContent } from "./components/RecipeDetailContent";
 
 type RecipeDetailPageProps = {
   params: Promise<{ id: string }>;
 };
 
-// Memoize within a single request so generateMetadata and the page
-// component share one DB round-trip instead of making two.
-const getRecipeCached = cache(async (id: string) => getRecipeById(id));
-
 export async function generateMetadata({
   params,
 }: RecipeDetailPageProps): Promise<Metadata> {
   const { id } = await params;
-  const recipe = await getRecipeCached(id);
+  const session = await getAuthSession();
+
+  if (!session?.accessToken) {
+    return { title: "Recipe Not Found" };
+  }
+
+  const recipe = await getRecipeById(id, session.accessToken);
 
   if (!recipe) {
     return { title: "Recipe Not Found" };
@@ -32,7 +34,9 @@ export async function generateMetadata({
     openGraph: {
       title: recipe.title,
       description,
-      images: recipe.image ? [{ url: recipe.image, width: 1200, height: 630, alt: recipe.title }] : [],
+      images: recipe.image
+        ? [{ url: recipe.image, width: 1200, height: 630, alt: recipe.title }]
+        : [],
       type: "article",
     },
     twitter: {
@@ -48,7 +52,13 @@ export default async function RecipeDetailPage({
   params,
 }: RecipeDetailPageProps) {
   const { id } = await params;
-  const recipe = await getRecipeCached(id);
+  const session = await getAuthSession();
+
+  if (!session?.accessToken) {
+    notFound();
+  }
+
+  const recipe = await getRecipeById(id, session.accessToken);
 
   if (!recipe) {
     notFound();

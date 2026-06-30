@@ -18,11 +18,14 @@ export const metadata: Metadata = {
 async function SavedRecipesContent() {
   const session = await getAuthSession();
 
-  if (!session?.user?.id) {
+  if (!session?.user?.id || !session.accessToken) {
     redirect(AUTH_ROUTES.SIGN_IN);
   }
 
-  const recipes = await getSavedRecipesWithData(session.user.id);
+  const recipes = await getSavedRecipesWithData(
+    session.user.id,
+    session.accessToken,
+  );
 
   return (
     <div className="flex flex-col gap-8">

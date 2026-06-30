@@ -15,6 +15,7 @@ import {
   Users,
 } from "lucide-react";
 import type { RecipeDetailData } from "@/lib/recipe/recipe.types";
+import { SaveRecipeButton } from "@/components/recipeCard/SaveRecipeButton";
 
 type RecipeDetailContentProps = {
   recipe: RecipeDetailData;
@@ -139,9 +140,16 @@ export function RecipeDetailContent({ recipe }: RecipeDetailContentProps) {
           </div>
 
           <div className="flex flex-col justify-center gap-4 p-6 sm:p-8">
-            <h1 className="font-heading text-3xl leading-tight text-foreground sm:text-4xl">
-              {recipe.title}
-            </h1>
+            <div className="flex items-start justify-between gap-4">
+              <h1 className="font-heading text-3xl leading-tight text-foreground sm:text-4xl">
+                {recipe.title}
+              </h1>
+
+              <SaveRecipeButton
+                recipeId={recipe.id}
+                initialIsSaved={recipe.isSaved ?? false}
+              />
+            </div>
 
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
               <span className="inline-flex items-center gap-1 text-foreground">

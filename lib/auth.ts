@@ -1,10 +1,23 @@
 import type { NextAuthOptions } from "next-auth";
 import { getServerSession } from "next-auth";
+import { cache } from "react";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
-import bcrypt from "bcryptjs";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { apiFetchPublic } from "@/lib/api/client";
+
+type AuthUserResponse = {
+  id: string;
+  email: string;
+  name: string | null;
+  image: string | null;
+  role: string;
+};
+
+type LoginResponse = {
+  user: AuthUserResponse;
+  token: string;
+};
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -19,38 +32,26 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        const supabase = createAdminClient();
-        const { data: user, error } = await supabase
-          .from("users")
-          .select("id, email, name, image, role, password")
-          .eq("email", credentials.email)
-          .maybeSingle();
+        try {
+          const data = await apiFetchPublic<LoginResponse>("/api/auth/login", {
+            method: "POST",
+            body: JSON.stringify({
+              email: credentials.email,
+              password: credentials.password,
+            }),
+          });
 
-        if (error || !user) {
+          return {
+            id: data.user.id,
+            email: data.user.email,
+            name: data.user.name,
+            image: data.user.image,
+            role: data.user.role,
+            accessToken: data.token,
+          };
+        } catch {
           throw new Error("Invalid credentials");
         }
-
-        const isPasswordValid = await bcrypt.compare(
-          credentials.password,
-          user.password,
-        );
-
-        if (!isPasswordValid) {
-          throw new Error("Invalid credentials");
-        }
-
-        await supabase
-          .from("users")
-          .update({ last_login_at: new Date().toISOString() })
-          .eq("id", user.id);
-
-        return {
-          id: String(user.id),
-          email: user.email,
-          name: user.name,
-          image: user.image,
-          role: user.role,
-        };
       },
     }),
     GoogleProvider({
@@ -79,62 +80,44 @@ export const authOptions: NextAuthOptions = {
         return false;
       }
 
-      const supabase = createAdminClient();
-      const { data: existingUser } = await supabase
-        .from("users")
-        .select("id, email, name, image, role")
-        .eq("email", user.email)
-        .maybeSingle();
+      try {
+        const data = await apiFetchPublic<LoginResponse>("/api/auth/oauth-upsert", {
+          method: "POST",
+          body: JSON.stringify({
+            email: user.email,
+            name: user.name,
+            image: user.image,
+            provider: account?.provider ?? "oauth",
+          }),
+        });
 
-      if (existingUser) {
-        user.id = String(existingUser.id);
-        user.role = existingUser.role;
-        user.name = existingUser.name ?? user.name;
-        user.image = existingUser.image ?? user.image;
-
-        await supabase
-          .from("users")
-          .update({
-            last_login_at: new Date().toISOString(),
-            provider: account?.provider,
-          })
-          .eq("id", existingUser.id);
+        user.id = data.user.id;
+        user.role = data.user.role;
+        user.name = data.user.name;
+        user.image = data.user.image;
+        user.accessToken = data.token;
 
         return true;
-      }
-
-      const { data: newUser, error } = await supabase
-        .from("users")
-        .insert({
-          email: user.email,
-          name: user.name,
-          image: user.image,
-          provider: account?.provider,
-          role: "USER",
-          last_login_at: new Date().toISOString(),
-        })
-        .select("id, role")
-        .single();
-
-      if (error || !newUser) {
+      } catch {
         return false;
       }
-
-      user.id = String(newUser.id);
-      user.role = newUser.role;
-
-      return true;
     },
     async jwt({ token, user, trigger, session }) {
+      // First login — copy user fields + backend JWT into the token
       if (user) {
         token.id = user.id;
         token.role = user.role;
+        token.accessToken = user.accessToken;
       }
 
-      // When the client calls useSession().update({ name }), propagate the
-      // new name into the JWT so the session reflects it immediately.
-      if (trigger === "update" && typeof session?.name === "string") {
-        token.name = session.name;
+      // Profile name/image update from client (EditProfileModal)
+      if (trigger === "update") {
+        if (typeof session?.name === "string") {
+          token.name = session.name;
+        }
+        if (session?.image !== undefined) {
+          token.picture = session.image;
+        }
       }
 
       return token;
@@ -145,9 +128,12 @@ export const authOptions: NextAuthOptions = {
         session.user.role = token.role;
       }
 
+      // Available on the server via getAuthSession() → apiFetchAuth()
+      session.accessToken = token.accessToken;
+
       return session;
     },
   },
 };
 
-export const getAuthSession = () => getServerSession(authOptions);
+export const getAuthSession = cache(() => getServerSession(authOptions));

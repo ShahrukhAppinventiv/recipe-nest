@@ -1,12 +1,12 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { RECIPE_PAGE_SIZE } from "@/lib/recipe/recipe.params";
+
+const RECIPE_LIST_SKELETON_COUNT = 6;
 
 export function RecipeListSkeleton() {
   return (
     <div className="flex flex-col gap-4" aria-busy aria-label="Loading recipes">
-
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {Array.from({ length: RECIPE_PAGE_SIZE }).map((_, index) => (
+        {Array.from({ length: RECIPE_LIST_SKELETON_COUNT }).map((_, index) => (
           <RecipeRichCardSkeleton key={index} />
         ))}
       </div>
@@ -42,43 +42,22 @@ function RecipeRichCardSkeleton() {
   );
 }
 
-export function RecipePageSkeleton() {
+/** Filters sidebar + search — used while filter options load (hero shown separately). */
+export function RecipeFiltersLayoutSkeleton() {
   return (
-    <div className="flex flex-col gap-8" aria-busy aria-label="Loading recipes">
-      <section className="overflow-hidden rounded-3xl border border-border/60 bg-white p-6 shadow-premium sm:p-8 lg:p-10">
-        <div className="mx-auto max-w-3xl space-y-5 text-center">
-          <Skeleton className="mx-auto h-7 w-32 rounded-full" />
-          <Skeleton className="mx-auto h-10 w-40 sm:h-12" />
-          <Skeleton className="mx-auto h-5 w-full max-w-lg" />
-          <Skeleton className="mx-auto h-5 w-full max-w-md" />
-        </div>
-      </section>
+    <div
+      className="grid gap-8 lg:grid-cols-[260px_1fr]"
+      aria-busy
+      aria-label="Loading recipe filters"
+    >
+      <aside className="hidden lg:block" aria-hidden>
+        <Skeleton className="h-[420px] w-full rounded-2xl" />
+      </aside>
 
-      <div className="grid gap-8 lg:grid-cols-[260px_1fr]">
-        <aside className="hidden lg:block">
-          <Skeleton className="h-[420px] w-full rounded-2xl" />
-        </aside>
-
-        <div className="flex min-w-0 flex-col gap-4">
-          <Skeleton className="h-[74px] w-full rounded-2xl" />
-
-          <Skeleton className="h-10 w-full rounded-lg lg:hidden" />
-
-          <Skeleton className="h-5 w-40" />
-
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {Array.from({ length: RECIPE_PAGE_SIZE }).map((_, index) => (
-              <RecipeRichCardSkeleton key={index} />
-            ))}
-          </div>
-
-          <div className="flex items-center justify-center gap-2 pt-2">
-            <Skeleton className="h-9 w-24 rounded-md" />
-            <Skeleton className="h-9 w-9 rounded-md" />
-            <Skeleton className="h-9 w-9 rounded-md" />
-            <Skeleton className="h-9 w-20 rounded-md" />
-          </div>
-        </div>
+      <div className="flex min-w-0 flex-col gap-4">
+        <Skeleton className="h-[74px] w-full rounded-2xl" aria-hidden />
+        <Skeleton className="h-10 w-full rounded-lg lg:hidden" aria-hidden />
+        <RecipeListSkeleton />
       </div>
     </div>
   );

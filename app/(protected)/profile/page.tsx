@@ -7,6 +7,7 @@ import { AUTH_ROUTES } from "@/lib/constants/constants";
 import { getUserProfile } from "@/lib/user/user.service";
 import { Skeleton } from "@/components/ui/skeleton";
 
+
 export const metadata: Metadata = {
   title: "My Profile",
   description: "View and manage your RecipeNest account details.",
@@ -16,11 +17,11 @@ export const metadata: Metadata = {
 async function ProfilePageContent() {
   const session = await getAuthSession();
 
-  if (!session?.user?.id) {
+  if (!session?.user?.id || !session.accessToken) {
     redirect(AUTH_ROUTES.SIGN_IN);
   }
 
-  const profile = await getUserProfile(session.user.id);
+  const profile = await getUserProfile(session.user.id, session.accessToken);
 
   if (!profile) {
     redirect(AUTH_ROUTES.SIGN_IN);

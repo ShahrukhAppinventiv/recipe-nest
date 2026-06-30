@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { AUTH_ROUTES, PROTECTED_NAV_ROUTES } from "@/lib/constants/constants";
 import { signOutUser } from "@/lib/services/auth.service";
+import { ViewImageModal } from "../ViewImageModal";
 
 type SessionUser = {
   name?: string | null;
@@ -116,35 +117,38 @@ function UserProfileSection({ user }: { user: SessionUser }) {
   };
 
   return (
-    <>
+    <div className="flex items-center gap-2">
+      <ViewImageModal
+        src={user.image ?? null}
+        alt={displayName}
+        fallbackText={getInitials(user.name)}
+      >
+        {user.image ? (
+          <Image
+            src={user.image}
+            alt={displayName}
+            width={36}
+            height={36}
+            unoptimized
+            className="h-9 w-9 rounded-full object-cover ring-2 ring-primary/20"
+          />
+        ) : (
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-sm font-medium text-primary">
+            {getInitials(user.name)}
+          </div>
+        )}
+      </ViewImageModal>
+
       <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
         <DropdownMenuTrigger asChild>
           <button
             type="button"
-            className="flex cursor-pointer items-center gap-2 rounded-full py-1 pl-1 pr-2 outline-none transition-colors hover:bg-primary/5 data-[state=open]:bg-primary/5 focus:outline-none"
+            className="flex cursor-pointer items-center gap-1.5 rounded-full py-1.5 px-2.5 outline-none transition-colors hover:bg-primary/5 data-[state=open]:bg-primary/5 focus:outline-none"
             aria-label="Open profile menu"
           >
-            {/* {user.image ? (
-              <Image
-                src={user.image}
-                alt={displayName}
-                width={36}
-                height={36}
-                className="h-9 w-9 rounded-full object-cover ring-2 ring-primary/20"
-              />
-            ) : (
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-sm font-medium text-primary">
-                {getInitials(user.name)}
-              </div>
-            )} */}
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-sm font-medium text-primary">
-                {getInitials(user.name)}
-              </div>
-
             <span className="max-w-[8rem] truncate text-sm font-medium text-foreground sm:max-w-[10rem]">
               {displayName}
             </span>
-
             <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
           </button>
         </DropdownMenuTrigger>
@@ -178,21 +182,21 @@ function UserProfileSection({ user }: { user: SessionUser }) {
 
       <AlertDialog open={logoutOpen} onOpenChange={setLogoutOpen}>
         <AlertDialogContent>
-          <AlertDialogHeader>
+          <AlertDialogHeader className="sm:!place-items-center sm:!text-center">
             <AlertDialogTitle>Log out?</AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to log out?
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogFooter className="flex-row sm:flex-row !justify-center sm:!justify-center gap-3">
+            <AlertDialogCancel className="mt-0 sm:mt-0">Cancel</AlertDialogCancel>
             <AlertDialogAction variant="destructive" onClick={handleLogout}>
               Log out
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </div>
   );
 }
 
